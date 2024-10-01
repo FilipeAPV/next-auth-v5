@@ -48,8 +48,7 @@ export default function LoginForm() {
       const response = await login(values);
 
       if (response.success) {
-        // TODO: add when we add 2FA
-        // setSuccess(response.success);
+        setSuccess(response.success);
       }
       setError(response.error as string);
     });
