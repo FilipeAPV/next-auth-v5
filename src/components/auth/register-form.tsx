@@ -42,7 +42,6 @@ export default function RegisterForm() {
       const response = await register(values);
 
       if (response.success) {
-        console.log(response.success);
         setSuccess(response.success);
       }
       setError(response.error as string);
