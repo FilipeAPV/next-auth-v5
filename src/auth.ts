@@ -4,6 +4,7 @@ import authConfig from "./auth.config";
 import { db } from "./lib/db";
 import { getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
+import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 
 declare module "next-auth" {
   /**
@@ -52,7 +53,24 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return false;
       }
 
-      // TODO: Add 2FA check
+      // 2FA check
+      if (existingUser?.isTwoFactorEnabled) {
+        // Verify if we have the two factor confirmation
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser.id
+        );
+
+        // Id we don't have the confirmation, we return false
+        if (!twoFactorConfirmation) {
+          return false;
+        }
+
+        // Delete two factor confirmation for next sign in
+        // We want to make sure that the user has to confirm the 2FA code every time they sign in
+        await db.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id },
+        });
+      }
 
       return true;
     },
