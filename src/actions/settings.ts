@@ -8,6 +8,7 @@ import { generateVerificationToken } from "@/lib/tokens";
 import { SettingsSchema } from "@/schemas";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { unstable_update } from "@/auth";
 
 export const settings = async (values: z.infer<typeof SettingsSchema>) => {
   const user = await currentUser();
@@ -65,9 +66,16 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     values.password = hashedPassword;
     values.newPassword = undefined;
   }
-  await db.user.update({
+  const updatedUser = await db.user.update({
     where: { id: dbUser.id },
     data: { ...values },
+  });
+
+  // Update session on the server side
+  await unstable_update({
+    user: {
+      ...updatedUser,
+    },
   });
 
   return { success: "Settings Updated!" };

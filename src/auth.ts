@@ -27,7 +27,7 @@ declare module "next-auth" {
   }
 }
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
+export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
   // Override the default NextAuth pages with your own custom pages
   pages: {
     signIn: "/auth/login",
