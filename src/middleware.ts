@@ -29,7 +29,18 @@ export default auth((req) => {
   }
 
   if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL("/auth/login", nextUrl));
+    let callbackUrl = nextUrl.pathname;
+
+    // If there's a query string (search parameters) in the nextUrl, append it to the callbackUrl
+    if (nextUrl.search) {
+      callbackUrl += nextUrl.search;
+    }
+    // Encode the complete callbackUrl to make it safe for use in a URL
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+    return Response.redirect(
+      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+    );
   }
 
   return null;
