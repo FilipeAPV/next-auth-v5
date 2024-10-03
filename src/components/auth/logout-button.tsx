@@ -8,8 +8,7 @@ type LogoutButtonProps = {
 
 export default function LogoutButton({ children }: LogoutButtonProps) {
   const onClick = async () => {
-    console.log("clicked");
-    await logout;
+    await logout();
   };
 
   return (
